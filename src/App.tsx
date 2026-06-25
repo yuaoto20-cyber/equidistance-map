@@ -12,9 +12,41 @@ export type RadiusCircle = {
   radiusKm: number;
 };
 
+type MapMode = "japan" | "world";
+
+type MapConfig = {
+  title: string;
+  description: string;
+  initialCenter: CenterPoint;
+  initialZoom: number;
+  tileUrl: string;
+  attribution: string;
+};
+
 const JAPAN_CENTER: CenterPoint = { lat: 36.2048, lng: 138.2529 };
-const INITIAL_ZOOM = 5;
+const WORLD_CENTER: CenterPoint = { lat: 20, lng: 0 };
 const INITIAL_RADII = [10, 25, 50, 100];
+
+const MAP_CONFIGS: Record<MapMode, MapConfig> = {
+  japan: {
+    title: "日本版",
+    description: "国土地理院の標準地図で、日本周辺の距離感を詳しく見ます。",
+    initialCenter: JAPAN_CENTER,
+    initialZoom: 5,
+    tileUrl: "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
+    attribution:
+      '地図出典：<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noreferrer">国土地理院</a>',
+  },
+  world: {
+    title: "世界版",
+    description: "世界地図で、都市間や国をまたぐ直線距離をざっくり比べます。",
+    initialCenter: WORLD_CENTER,
+    initialZoom: 2,
+    tileUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+  },
+};
 
 const createRadius = (radiusKm: number): RadiusCircle => ({
   id: crypto.randomUUID(),
@@ -26,6 +58,9 @@ const isValidRadius = (radiusKm: number) =>
 
 const parseQuery = () => {
   const params = new URLSearchParams(window.location.search);
+  const mapParam = params.get("map");
+  const mapMode =
+    mapParam === "japan" || mapParam === "world" ? mapParam : null;
   const lat = Number(params.get("lat"));
   const lng = Number(params.get("lng"));
   const center =
@@ -36,9 +71,12 @@ const parseQuery = () => {
     ?.split(",")
     .map((value) => Number(value.trim()))
     .filter(isValidRadius);
+  const inferredMapMode: MapMode | null =
+    mapMode ?? (center || radiusParam ? "japan" : null);
 
   return {
     center,
+    mapMode: inferredMapMode,
     radii: radii && radii.length > 0 ? radii.map(createRadius) : null,
   };
 };
@@ -48,6 +86,9 @@ const formatNumber = (value: number) =>
 
 function App() {
   const initialQuery = useMemo(parseQuery, []);
+  const [selectedMode, setSelectedMode] = useState<MapMode | null>(
+    initialQuery.mapMode,
+  );
   const [center, setCenter] = useState<CenterPoint | null>(initialQuery.center);
   const [radii, setRadii] = useState<RadiusCircle[]>(
     initialQuery.radii ?? INITIAL_RADII.map(createRadius),
@@ -64,12 +105,16 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams();
 
-    if (center) {
+    if (selectedMode) {
+      params.set("map", selectedMode);
+    }
+
+    if (selectedMode && center) {
       params.set("lat", formatNumber(center.lat));
       params.set("lng", formatNumber(center.lng));
     }
 
-    if (drawableRadii.length > 0) {
+    if (selectedMode && drawableRadii.length > 0) {
       params.set(
         "r",
         drawableRadii.map((circle) => formatNumber(circle.radiusKm)).join(","),
@@ -84,7 +129,21 @@ function App() {
       window.history.replaceState(null, "", nextUrl);
     }
     hasInitializedUrl.current = true;
-  }, [center, drawableRadii]);
+  }, [center, drawableRadii, selectedMode]);
+
+  const selectMode = (mode: MapMode) => {
+    setSelectedMode(mode);
+    setCenter(null);
+    setRadii(INITIAL_RADII.map(createRadius));
+    setGeoError("");
+    setMapResetKey((key) => key + 1);
+  };
+
+  const backToModeSelect = () => {
+    setSelectedMode(null);
+    setCenter(null);
+    setGeoError("");
+  };
 
   const updateRadius = (id: string, radiusKm: number) => {
     setRadii((current) =>
@@ -137,22 +196,62 @@ function App() {
     setMapResetKey((key) => key + 1);
   };
 
+  if (!selectedMode) {
+    return (
+      <div className="app-shell mode-shell">
+        <main className="mode-picker" aria-labelledby="mode-picker-title">
+          <p className="eyebrow">Choose your map</p>
+          <h1 id="mode-picker-title">等距離マップ</h1>
+          <p className="mode-lead">
+            中心地点を選んで、指定半径の同心円を地図上に表示します。
+          </p>
+          <div className="mode-card-grid">
+            {(Object.entries(MAP_CONFIGS) as [MapMode, MapConfig][]).map(
+              ([mode, config]) => (
+                <button
+                  className="mode-card"
+                  key={mode}
+                  onClick={() => selectMode(mode)}
+                  type="button"
+                >
+                  <span>{config.title}</span>
+                  <strong>
+                    {mode === "japan" ? "日本地図で見る" : "世界地図で見る"}
+                  </strong>
+                  <small>{config.description}</small>
+                </button>
+              ),
+            )}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const mapConfig = MAP_CONFIGS[selectedMode];
+
   return (
     <div className="app-shell">
       <main className="app-layout">
         <MapView
           center={center}
-          initialCenter={JAPAN_CENTER}
-          initialZoom={INITIAL_ZOOM}
+          attribution={mapConfig.attribution}
+          initialCenter={mapConfig.initialCenter}
+          initialZoom={mapConfig.initialZoom}
+          mapKey={selectedMode}
           radii={drawableRadii}
           resetKey={mapResetKey}
+          tileUrl={mapConfig.tileUrl}
           onCenterChange={setCenter}
         />
         <ControlPanel
           center={center}
           radii={radii}
           geoError={geoError}
+          mapDescription={mapConfig.description}
+          mapTitle={mapConfig.title}
           onAddRadius={addRadius}
+          onBackToModeSelect={backToModeSelect}
           onDeleteRadius={deleteRadius}
           onLocateUser={locateUser}
           onPresetSelect={applyPreset}

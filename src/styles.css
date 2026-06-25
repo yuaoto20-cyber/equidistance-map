@@ -31,6 +31,77 @@ button {
   padding: 18px;
 }
 
+.mode-shell {
+  display: grid;
+  place-items: center;
+}
+
+.mode-picker {
+  width: min(920px, 100%);
+  padding: 34px;
+  border: 1px solid #d8eef8;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 16px 42px rgba(74, 163, 199, 0.16);
+}
+
+.mode-lead {
+  max-width: 620px;
+  margin: 12px 0 24px;
+  color: #425466;
+  line-height: 1.7;
+}
+
+.mode-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.mode-card {
+  display: flex;
+  min-height: 210px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 22px;
+  border: 1px solid #d8eef8;
+  border-radius: 8px;
+  color: #1f2937;
+  background:
+    linear-gradient(135deg, rgba(143, 211, 244, 0.36), rgba(255, 255, 255, 0.92)),
+    #f4fbff;
+  text-align: left;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.mode-card:hover {
+  border-color: #4aa3c7;
+  box-shadow: 0 12px 28px rgba(74, 163, 199, 0.18);
+  transform: translateY(-2px);
+}
+
+.mode-card span {
+  color: #4aa3c7;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.mode-card strong {
+  font-size: 1.45rem;
+}
+
+.mode-card small {
+  max-width: 32ch;
+  color: #425466;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
 .app-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 380px;
@@ -121,6 +192,40 @@ button {
 
 .panel-header {
   padding-bottom: 4px;
+}
+
+.map-mode-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 10px;
+  border: 1px solid #d8eef8;
+  border-radius: 8px;
+  background: #f4fbff;
+}
+
+.map-mode-badge span {
+  color: #4aa3c7;
+  font-weight: 800;
+}
+
+.map-mode-badge button {
+  padding: 6px 10px;
+  border: 1px solid #d8eef8;
+  border-radius: 8px;
+  color: #1f2937;
+  background: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.mode-description {
+  margin: 10px 0 0;
+  color: #425466;
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 .eyebrow {
@@ -363,6 +468,10 @@ h2 {
     min-height: auto;
   }
 
+  .mode-picker {
+    padding: 24px;
+  }
+
   .map-section {
     min-height: 56vh;
   }
@@ -380,6 +489,19 @@ h2 {
 @media (max-width: 520px) {
   .control-panel {
     padding: 16px;
+  }
+
+  .mode-picker {
+    padding: 18px;
+  }
+
+  .mode-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-card {
+    min-height: 170px;
+    padding: 18px;
   }
 
   .coordinate-box,

@@ -7,7 +7,10 @@ type ControlPanelProps = {
   center: CenterPoint | null;
   radii: RadiusCircle[];
   geoError: string;
+  mapDescription: string;
+  mapTitle: string;
   onAddRadius: () => void;
+  onBackToModeSelect: () => void;
   onDeleteRadius: (id: string) => void;
   onLocateUser: () => void;
   onPresetSelect: (radii: number[]) => void;
@@ -21,7 +24,10 @@ function ControlPanel({
   center,
   radii,
   geoError,
+  mapDescription,
+  mapTitle,
   onAddRadius,
+  onBackToModeSelect,
   onDeleteRadius,
   onLocateUser,
   onPresetSelect,
@@ -40,6 +46,13 @@ function ControlPanel({
       <div className="panel-header">
         <p className="eyebrow">Travel distance playground</p>
         <h1>等距離マップ</h1>
+        <div className="map-mode-badge">
+          <span>{mapTitle}</span>
+          <button type="button" onClick={onBackToModeSelect}>
+            選び直す
+          </button>
+        </div>
+        <p className="mode-description">{mapDescription}</p>
       </div>
 
       <section className="panel-section">

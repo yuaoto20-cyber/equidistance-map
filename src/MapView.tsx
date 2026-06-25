@@ -15,10 +15,13 @@ const EARTH_RADIUS_KM = 6371;
 
 type MapViewProps = {
   center: CenterPoint | null;
+  attribution: string;
   initialCenter: CenterPoint;
   initialZoom: number;
+  mapKey: string;
   radii: RadiusCircle[];
   resetKey: number;
+  tileUrl: string;
   onCenterChange: (center: CenterPoint) => void;
 };
 
@@ -173,10 +176,13 @@ function RadiusLabel({
 
 function MapView({
   center,
+  attribution,
   initialCenter,
   initialZoom,
+  mapKey,
   radii,
   resetKey,
+  tileUrl,
   onCenterChange,
 }: MapViewProps) {
   return (
@@ -184,12 +190,13 @@ function MapView({
       <MapContainer
         center={[center?.lat ?? initialCenter.lat, center?.lng ?? initialCenter.lng]}
         className="map"
+        key={mapKey}
         scrollWheelZoom
         zoom={initialZoom}
       >
         <TileLayer
-          attribution='地図出典：<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noreferrer">国土地理院</a>'
-          url="https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
+          attribution={attribution}
+          url={tileUrl}
         />
         <MapEvents onCenterChange={onCenterChange} />
         <SyncCenter center={center} />
