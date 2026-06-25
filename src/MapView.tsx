@@ -21,7 +21,9 @@ type MapViewProps = {
   mapKey: string;
   radii: RadiusCircle[];
   resetKey: number;
+  tileSize?: number;
   tileUrl: string;
+  zoomOffset?: number;
   onCenterChange: (center: CenterPoint) => void;
 };
 
@@ -182,7 +184,9 @@ function MapView({
   mapKey,
   radii,
   resetKey,
+  tileSize,
   tileUrl,
+  zoomOffset,
   onCenterChange,
 }: MapViewProps) {
   return (
@@ -196,7 +200,9 @@ function MapView({
       >
         <TileLayer
           attribution={attribution}
+          tileSize={tileSize}
           url={tileUrl}
+          zoomOffset={zoomOffset}
         />
         <MapEvents onCenterChange={onCenterChange} />
         <SyncCenter center={center} />

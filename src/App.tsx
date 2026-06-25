@@ -19,7 +19,9 @@ type MapConfig = {
   description: string;
   initialCenter: CenterPoint;
   initialZoom: number;
+  tileSize?: number;
   tileUrl: string;
+  zoomOffset?: number;
   attribution: string;
 };
 
@@ -39,12 +41,15 @@ const MAP_CONFIGS: Record<MapMode, MapConfig> = {
   },
   world: {
     title: "世界版",
-    description: "世界地図で、都市間や国をまたぐ直線距離をざっくり比べます。",
+    description:
+      "日本語ラベルの世界地図で、都市間や国をまたぐ直線距離をざっくり比べます。",
     initialCenter: WORLD_CENTER,
     initialZoom: 2,
-    tileUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    tileSize: 512,
+    tileUrl: "https://tile.openstreetmap.jp/styles/maptiler-basic-ja/512/{z}/{x}/{y}.png",
+    zoomOffset: -1,
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+      '&copy; <a href="https://openmaptiles.org/" target="_blank" rel="noreferrer">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>',
   },
 };
 
@@ -241,7 +246,9 @@ function App() {
           mapKey={selectedMode}
           radii={drawableRadii}
           resetKey={mapResetKey}
+          tileSize={mapConfig.tileSize}
           tileUrl={mapConfig.tileUrl}
+          zoomOffset={mapConfig.zoomOffset}
           onCenterChange={setCenter}
         />
         <ControlPanel
