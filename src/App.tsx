@@ -53,8 +53,12 @@ const MAP_CONFIGS: Record<MapMode, MapConfig> = {
   },
 };
 
+const createId = () =>
+  globalThis.crypto?.randomUUID?.() ??
+  `radius-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
 const createRadius = (radiusKm: number): RadiusCircle => ({
-  id: crypto.randomUUID(),
+  id: createId(),
   radiusKm,
 });
 
