@@ -189,6 +189,11 @@ function MapView({
   zoomOffset,
   onCenterChange,
 }: MapViewProps) {
+  const tileLayerOptions = {
+    ...(tileSize !== undefined ? { tileSize } : {}),
+    ...(zoomOffset !== undefined ? { zoomOffset } : {}),
+  };
+
   return (
     <section className="map-section" aria-label="等距離マップ">
       <MapContainer
@@ -200,9 +205,8 @@ function MapView({
       >
         <TileLayer
           attribution={attribution}
-          tileSize={tileSize}
           url={tileUrl}
-          zoomOffset={zoomOffset}
+          {...tileLayerOptions}
         />
         <MapEvents onCenterChange={onCenterChange} />
         <SyncCenter center={center} />
