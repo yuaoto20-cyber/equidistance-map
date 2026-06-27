@@ -42,14 +42,12 @@ const MAP_CONFIGS: Record<MapMode, MapConfig> = {
   world: {
     title: "世界版",
     description:
-      "日本語ラベルの世界地図で、都市間や国をまたぐ直線距離をざっくり比べます。",
+      "現地語名の世界地図で、都市間や国をまたぐ直線距離をざっくり比べます。",
     initialCenter: WORLD_CENTER,
     initialZoom: 2,
-    tileSize: 512,
-    tileUrl: "https://tile.openstreetmap.jp/styles/maptiler-basic-ja/512/{z}/{x}/{y}.png",
-    zoomOffset: -1,
+    tileUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution:
-      '&copy; <a href="https://openmaptiles.org/" target="_blank" rel="noreferrer">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>',
+      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
   },
 };
 
