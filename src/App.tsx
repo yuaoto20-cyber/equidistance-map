@@ -93,12 +93,21 @@ const parseQuery = () => {
 const formatNumber = (value: number) =>
   Number.parseFloat(value.toFixed(6)).toString();
 
+const isInsideJapanView = (center: CenterPoint) =>
+  center.lat >= 20 && center.lat <= 50 && center.lng >= 120 && center.lng <= 155;
+
 function App() {
   const initialQuery = useMemo(parseQuery, []);
+  const initialCenter =
+    initialQuery.mapMode === "japan" &&
+    initialQuery.center &&
+    !isInsideJapanView(initialQuery.center)
+      ? null
+      : initialQuery.center;
   const [selectedMode, setSelectedMode] = useState<MapMode | null>(
     initialQuery.mapMode,
   );
-  const [center, setCenter] = useState<CenterPoint | null>(initialQuery.center);
+  const [center, setCenter] = useState<CenterPoint | null>(initialCenter);
   const [radii, setRadii] = useState<RadiusCircle[]>(
     initialQuery.radii ?? INITIAL_RADII.map(createRadius),
   );
